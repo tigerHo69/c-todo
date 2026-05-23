@@ -14,6 +14,15 @@ $(BIN): $(OBJ)
 src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+PREFIX  = /usr/local
+
+install: $(BIN)
+	install -d $(PREFIX)/bin
+	install -m 755 $(BIN) $(PREFIX)/bin/$(BIN)
+
+uninstall:
+	rm -f $(PREFIX)/bin/$(BIN)
+
 clean:
 	rm -f $(OBJ) $(BIN) tests/test_db tests/test_cli
 
@@ -27,4 +36,4 @@ tests/test_db: tests/test_db.c src/db.c src/task.c
 tests/test_cli: tests/test_cli.c src/cli.c src/task.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-.PHONY: all clean test
+.PHONY: all clean test install uninstall
