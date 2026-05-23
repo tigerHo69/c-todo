@@ -2,18 +2,23 @@
 
 A fast, minimal command-line task manager written in C. Uses SQLite for reliable storage in a single file.
 
-## Build
+## Build & Install
 
 Requires a C17 compiler and SQLite3 development headers (included on macOS and most Linux distros).
 
+### Quick start
+
 ```bash
-make
+make           # build the binary
+sudo make install  # install to /usr/local/bin
+todo add "Buy groceries"  # run from anywhere
 ```
 
-This produces a `todo` binary in the project root. Optionally install it:
+### Manual build
 
 ```bash
-sudo cp todo /usr/local/bin/
+make           # produces ./todo binary
+./todo add "Test"  # run locally without installing
 ```
 
 ### Build from source on Linux (if SQLite headers aren't installed)
@@ -26,6 +31,13 @@ sudo apt install libsqlite3-dev
 sudo dnf install sqlite-devel
 
 make
+sudo make install
+```
+
+### Uninstall
+
+```bash
+sudo make uninstall
 ```
 
 ## Usage
@@ -100,14 +112,24 @@ Permanently removes all completed tasks from the database.
 todo help
 ```
 
-## Storage
+## How It Works
 
-Tasks are stored in a SQLite database at `~/.todo.db`. Override with the `TODO_DB` environment variable:
+Tasks are stored locally in a SQLite database at `~/.todo.db` — no server, no cloud, just your data on your machine.
+
+**Why SQLite?**
+- Single-file storage (easy to backup: `cp ~/.todo.db ~/.todo.db.bak`)
+- Reliable, battle-tested
+- No dependencies or server to run
+- Lightning fast
+
+**Customize storage:**
 
 ```bash
 export TODO_DB=~/projects/work-tasks.db
 todo add "Work thing"
 ```
+
+Now this separate database stores work tasks, while `~/.todo.db` keeps personal tasks.
 
 ## Environment Variables
 
@@ -122,20 +144,31 @@ todo add "Work thing"
 make test
 ```
 
+## Design Notes
+
+- **Pure C17** — no external libraries except SQLite
+- **~1100 lines** — compact, readable, maintainable
+- **Parameterized SQL** — no injection vulnerabilities
+- **17 unit tests** — covers all operations and edge cases
+- **No GUI** — follows Unix philosophy: single-purpose, composable tool
+
+For users who need a visual interface, the CLI output is designed to be clear and parseable. You can build a GUI on top by calling the binary and parsing output, or integrate into scripts.
+
 ## Project Structure
 
 ```
 c-todo/
-├── Makefile
+├── Makefile            Build, install, test targets
+├── README.md           This file
 ├── src/
 │   ├── main.c          Entry point and command dispatch
 │   ├── cli.c / cli.h   Argument parsing
-│   ├── db.c / db.h     SQLite operations
+│   ├── db.c / db.h     SQLite CRUD operations
 │   ├── task.c / task.h  Task display and formatting
-│   └── color.h         ANSI color support
+│   └── color.h         ANSI color macros
 └── tests/
-    ├── test_db.c       Database operation tests
-    └── test_cli.c      CLI parsing tests
+    ├── test_db.c       Database operation tests (7 tests)
+    └── test_cli.c      CLI parsing tests (10 tests)
 ```
 
 ## License
