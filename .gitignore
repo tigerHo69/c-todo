@@ -1,0 +1,18 @@
+# Build artifacts
+*.o
+todo
+tests/test_db
+tests/test_cli
+
+# SQLite databases
+*.db
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
